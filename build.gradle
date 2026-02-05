@@ -1,0 +1,56 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '4.0.2'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'ru.team2skill'
+version = '0.0.1-SNAPSHOT'
+description = 'Team2Skill — сервис подбора проектных команд по навыкам и ролям'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+// Исходники и ресурсы лежат в папке backend/
+sourceSets {
+	main {
+		java { srcDirs = ['backend/src/main/java'] }
+		resources { srcDirs = ['backend/src/main/resources'] }
+	}
+	test {
+		java { srcDirs = ['backend/src/test/java'] }
+		resources { srcDirs = ['backend/src/test/resources'] }
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	testImplementation 'org.springframework.boot:spring-boot-starter-thymeleaf-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+// Подхватываем готовую сборку фронта (frontend/dist) как статику бэка.
+// Ничего не удаляем из frontend — просто копируем в backend/resources/static.
+tasks.register('syncFrontend', Copy) {
+	from('frontend/dist')
+	into('backend/src/main/resources/static')
+	include('**/*')
+}
+
+tasks.named('processResources') {
+	dependsOn(tasks.named('syncFrontend'))
+}
