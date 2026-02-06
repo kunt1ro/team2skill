@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { Button } from "./ui/button";
 import { motion } from "motion/react";
 import {
@@ -24,11 +24,62 @@ interface LoginDialogProps {
 
 function LoginDialog({ trigger }: LoginDialogProps) {
   const [mode, setMode] = useState<"login" | "forgot">("login");
+  const [login, setLogin] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState<"student" | "teacher">("student");
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isLogin = mode === "login";
+  const resetForm = () => {
+    setLogin("");
+    setPassword("");
+    setRole("student");
+    setError("");
+    setIsSubmitting(false);
+  };
 
+  const handleLoginSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError("");
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          login,
+          password,
+          role,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        setError(data?.message ?? "Неверный логин или пароль для выбранной роли.");
+        return;
+      }
+
+      const data: { redirect: string } = await response.json();
+      window.location.href = data.redirect;
+    } catch (err) {
+      setError("Не удалось связаться с сервером. Попробуйте позже.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   return (
-    <Dialog onOpenChange={(open) => (!open ? setMode("login") : null)}>
+    <Dialog
+      onOpenChange={(open) => {
+        if (!open) {
+          setMode("login");
+          resetForm();
+        }
+      }}
+    >
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -39,20 +90,39 @@ function LoginDialog({ trigger }: LoginDialogProps) {
               : "Введите почту, мы пришлем ссылку для восстановления."}
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4">
+        <form
+          className="space-y-4"
+          onSubmit={isLogin ? handleLoginSubmit : (event) => event.preventDefault()}
+        >
           {isLogin ? (
             <>
               <div className="space-y-2">
                 <Label htmlFor="login-email">Логин</Label>
-                <Input id="login-email" type="text" placeholder="Введите логин" />
+                <Input
+                  id="login-email"
+                  type="text"
+                  placeholder="Введите логин"
+                  value={login}
+                  onChange={(event) => setLogin(event.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="login-password">Пароль</Label>
-                <Input id="login-password" type="password" placeholder="Введите пароль" />
+                <Input
+                  id="login-password"
+                  type="password"
+                  placeholder="Введите пароль"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label>Выберите роль</Label>
-                <RadioGroup defaultValue="student" className="flex flex-wrap gap-4">
+                <RadioGroup
+                  value={role}
+                  onValueChange={(value) => setRole(value as "student" | "teacher")}
+                  className="flex flex-wrap gap-4"
+                >
                   <div className="flex items-center gap-2">
                     <RadioGroupItem id="role-student" value="student" />
                     <Label htmlFor="role-student" className="text-sm font-normal">
@@ -67,6 +137,7 @@ function LoginDialog({ trigger }: LoginDialogProps) {
                   </div>
                 </RadioGroup>
               </div>
+              {error ? <p className="text-sm text-destructive">{error}</p> : null}
               <button
                 type="button"
                 className="text-sm text-primary hover:text-primary/80 transition-colors"
@@ -90,10 +161,12 @@ function LoginDialog({ trigger }: LoginDialogProps) {
               </button>
             </>
           )}
-        </div>
-        <DialogFooter>
-          <Button type="submit">{isLogin ? "Войти" : "Отправить ссылку"}</Button>
-        </DialogFooter>
+          <DialogFooter>
+            <Button type="submit" disabled={isSubmitting}>
+              {isLogin ? "Войти" : "Отправить ссылку"}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

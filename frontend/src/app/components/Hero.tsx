@@ -1,6 +1,7 @@
 import { Button } from "./ui/button";
-import { Check, Network, Eye, Settings } from "lucide-react";
+import { Check, Eye, Settings } from "lucide-react";
 import { motion } from "motion/react";
+import { HeroInfographic } from "./HeroInfographic";
 
 interface HeroProps {
   onPrimaryClick: () => void;
@@ -8,7 +9,7 @@ interface HeroProps {
 
 export function Hero({ onPrimaryClick }: HeroProps) {
   return (
-    <section className="pb-16 pt-0 lg:pb-24 lg:pt-0 bg-gradient-to-b from-background to-muted/20">
+    <section className="pb-16 pt-6 lg:pb-24 lg:pt-10 bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4 lg:px-6">
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           {/* Left Content */}
@@ -16,6 +17,7 @@ export function Hero({ onPrimaryClick }: HeroProps) {
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
+            className="lg:pl-4"
           >
             <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight mb-6">
               Собирайте проектные команды объективно — по навыкам, ролям и загрузке
@@ -54,31 +56,7 @@ export function Hero({ onPrimaryClick }: HeroProps) {
               ))}
             </div>
           </motion.div>
-
-          {/* Right Visual */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-            className="relative mx-auto w-full max-w-[360px]"
-            >
-              <div className="aspect-square bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl p-6 flex items-center justify-center">
-                <Network className="w-full h-full max-w-[220px] text-primary/20" strokeWidth={0.5} />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="grid grid-cols-3 gap-4">
-                    {[...Array(9)].map((_, i) => (
-                      <div
-                        key={i}
-                        className="w-10 h-10 bg-primary/10 rounded-lg border-2 border-primary/20"
-                        style={{
-                        animation: `pulse ${2 + i * 0.2}s ease-in-out infinite`,
-                      }}
-                    ></div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </motion.div>
+          <HeroInfographic />
         </div>
       </div>
     </section>
