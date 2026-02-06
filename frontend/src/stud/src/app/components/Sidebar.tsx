@@ -30,22 +30,23 @@ export function Sidebar({ activeScreen, onNavigate, isOpen = true, onClose }: Si
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed lg:sticky top-0 left-0 h-screen w-64 bg-card/50 backdrop-blur-sm border-r border-border flex flex-col z-50 transition-transform duration-300",
+          "fixed top-0 left-0 h-full bg-sidebar border-r border-sidebar-border z-50 w-64 transition-transform duration-300 lg:translate-x-0",
           !isOpen && "-translate-x-full lg:translate-x-0"
         )}
       >
-        <div className="h-16 flex items-center justify-between px-6 border-b border-border lg:hidden">
-          <h2 className="font-semibold">Меню</h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-accent rounded-lg transition-colors"
-            aria-label="Закрыть"
-          >
-            <X className="size-5" />
-          </button>
-        </div>
-        
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+        <div className="flex flex-col h-full">
+          <div className="h-16 flex items-center justify-between px-6 border-b border-sidebar-border">
+            <h1 className="text-xl font-semibold text-primary">Skill 2 Team</h1>
+            <button
+              onClick={onClose}
+              className="lg:hidden text-sidebar-foreground hover:text-primary"
+              aria-label="Закрыть"
+            >
+              <X className="size-5" />
+            </button>
+          </div>
+
+          <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeScreen === item.id;
@@ -58,10 +59,10 @@ export function Sidebar({ activeScreen, onNavigate, isOpen = true, onClose }: Si
                   onClose?.();
                 }}
                 className={cn(
-                  "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all",
+                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all",
                   isActive
-                    ? "bg-[#34D399]/10 text-[#34D399]"
-                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                    ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
+                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                 )}
               >
                 <Icon className="size-5 shrink-0" />
@@ -69,7 +70,8 @@ export function Sidebar({ activeScreen, onNavigate, isOpen = true, onClose }: Si
               </button>
             );
           })}
-        </nav>
+          </nav>
+        </div>
       </aside>
     </>
   );

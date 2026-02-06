@@ -51,7 +51,10 @@ export default function App() {
         />
         
         <div className="flex-1 flex flex-col overflow-hidden">
-          <TopBar onMenuClick={() => setSidebarOpen(true)} />
+          <TopBar
+            onMenuClick={() => setSidebarOpen(true)}
+            activeScreen={activeScreen}
+          />
           
           <main className="flex-1 overflow-y-auto pb-20 lg:pb-0">
             {renderScreen()}

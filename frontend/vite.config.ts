@@ -17,6 +17,16 @@ export default defineConfig({
     },
   },
 
+  build: {
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        studentAccount: path.resolve(__dirname, 'student/account/index.html'),
+        curatorAccount: path.resolve(__dirname, 'curator/account/index.html'),
+      },
+    },
+  },
+
   // Dev server settings
   server: {
     proxy: {

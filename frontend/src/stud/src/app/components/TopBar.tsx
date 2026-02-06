@@ -1,38 +1,55 @@
 import { Avatar, AvatarFallback } from "./ui/avatar";
-import { Badge } from "./ui/badge";
-import { Menu } from "lucide-react";
+import { Menu, Bell, ChevronRight } from "lucide-react";
 
 interface TopBarProps {
   onMenuClick?: () => void;
+  activeScreen: string;
 }
 
-export function TopBar({ onMenuClick }: TopBarProps) {
+const screenLabels: Record<string, string> = {
+  home: "Главная",
+  profile: "Мой профиль",
+  course: "Мой курс",
+  team: "Команда и проект",
+  support: "Поддержка",
+};
+
+export function TopBar({ onMenuClick, activeScreen }: TopBarProps) {
+  const currentLabel = screenLabels[activeScreen] ?? "Главная";
+
   return (
-    <div className="h-16 border-b border-border bg-card/50 backdrop-blur-sm flex items-center justify-between px-6 sticky top-0 z-40">
+    <header className="h-16 bg-card border-b border-border sticky top-0 z-30 flex items-center justify-between px-4 lg:px-6">
       <div className="flex items-center gap-4">
         <button
           onClick={onMenuClick}
-          className="lg:hidden p-2 hover:bg-accent rounded-lg transition-colors"
-          aria-label="Menu"
+          className="lg:hidden text-foreground hover:text-primary"
+          aria-label="Меню"
         >
-          <Menu className="size-5" />
+          <Menu size={24} />
         </button>
-        <h1 className="text-xl font-semibold bg-gradient-to-r from-[#34D399] to-[#10B981] bg-clip-text text-transparent">
-          Skill 2 Team
-        </h1>
-      </div>
-      
-      <div className="flex items-center gap-3">
-        <Badge variant="secondary" className="bg-[#34D399]/10 text-[#34D399] border-[#34D399]/20 hidden sm:inline-flex">
-          Студент
-        </Badge>
-        <div className="flex items-center gap-2">
-          <Avatar className="size-8">
-            <AvatarFallback className="bg-[#34D399]/20 text-[#34D399]">ИИ</AvatarFallback>
-          </Avatar>
-          <span className="text-sm font-medium hidden sm:inline">Иванов Иван</span>
+        <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground">
+          <span>Главная</span>
+          <ChevronRight size={16} />
+          <span className="text-foreground">{currentLabel}</span>
         </div>
       </div>
-    </div>
+      
+      <div className="flex items-center gap-4">
+        <button className="relative p-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-colors">
+          <Bell size={20} />
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full" />
+        </button>
+
+        <div className="flex items-center gap-3 pl-4 border-l border-border">
+          <div className="hidden sm:block text-right">
+            <div className="text-sm font-medium">Студент</div>
+            <div className="text-xs text-muted-foreground">Иванов Иван</div>
+          </div>
+          <Avatar className="size-10">
+            <AvatarFallback className="bg-primary/20 text-primary">ИИ</AvatarFallback>
+          </Avatar>
+        </div>
+      </div>
+    </header>
   );
 }
